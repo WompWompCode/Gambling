@@ -8,6 +8,7 @@ import time
 global bankAccount
 
 
+############ HAND CLASSES ARE A WORK IN PROGRESS #############
 class AiHand:
     def __init__(self):
         self.hand = []
