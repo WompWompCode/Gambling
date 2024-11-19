@@ -194,6 +194,7 @@ def nimTypeZero():
     cardsInDeck = len(deckOfCards)
     playedCards = []
     playersHand = []
+    orderOfPlay = []
     aiPlayers = 3
     AiHands = []
     for i in range(aiPlayers):
