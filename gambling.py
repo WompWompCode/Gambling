@@ -3,7 +3,6 @@ import gamblingAccountLogin
 from gamblingAccountLogin import *
 from random import randint
 from tkinter import *
-import time
 
 global bankAccount
 
@@ -12,6 +11,8 @@ global bankAccount
 class AiHand:
     def __init__(self):
         self.hand = []
+        
+AiHands = []
 
 
 def updateBalance(bankAccount):
@@ -32,6 +33,23 @@ def updateBalance(bankAccount):
         json.dump(file_data, file, indent = 4)
 
     print("Balance for", accountUsername, "successfully updated to", bankAccount)
+
+def drawCard(hand, deckOfCards, cardsInDeck):
+    cardDrawn = randint(1, cardsInDeck)
+    for i in range(1, cardsInDeck+1):
+        if i == cardDrawn:
+            cardDrawn = deckOfCards[i-1]
+            del deckOfCards[i-1]
+            hand.append(cardDrawn)
+            break
+    cardsInDeck = len(deckOfCards)
+    return hand, deckOfCards, cardsInDeck
+
+def placeCard(cardPos, hand, playedCards):
+    cardPlaced = hand[cardPos]
+    playedCards.append(cardPlaced)
+    del hand[cardPos]
+    print(f"Card {cardPlaced} has been placed")
 
 
 def slots():
@@ -90,28 +108,14 @@ def blackjack():
         dealersHandAmount = len(dealersHand)
         dealersHandValue = 0
         while dealersHandAmount < 2:
-            cardDrawn = randint(1, cardsInDeck)
-            for i in range(cardsInDeck):
-                if i == cardDrawn:
-                    cardDrawn = deckOfCards[i]
-                    del deckOfCards[i]
-                    dealersHand.append(cardDrawn)
-                    break
+            dealersHand, deckOfCards, cardsInDeck = drawCard(dealersHand, deckOfCards, cardsInDeck)
             dealersHandAmount = len(dealersHand)
-            cardsInDeck = len(deckOfCards)
 
         playersHandAmount = len(playersHand)
         playersHandValue = 0
         while playersHandAmount < 2:
-            cardDrawn = randint(1, cardsInDeck)
-            for i in range(cardsInDeck):
-                if i == cardDrawn:
-                    cardDrawn = deckOfCards[i]
-                    del deckOfCards[i]
-                    playersHand.append(cardDrawn)
-                    break
+            playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
             playersHandAmount = len(playersHand)
-            cardsInDeck = len(deckOfCards)
 
 
         while gameInProgress == True:
@@ -141,15 +145,8 @@ def blackjack():
             if playersHandValue < 21:
                 turnDecision = input("Do you wish to hit or stand")
                 if turnDecision.lower() == "hit":
-                    cardDrawn = randint(1, cardsInDeck)
-                    for i in range(cardsInDeck):
-                        if i == cardDrawn:
-                            cardDrawn = deckOfCards[i]
-                            del deckOfCards[i]
-                            playersHand.append(cardDrawn)
-                            break
+                    playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
                     playersHandAmount = len(playersHand)
-                    cardsInDeck = len(deckOfCards)
                 if turnDecision.lower() == "stand":
                     print("You have", playersHandValue, "with", playersHandAmount, "cards") 
                     print("The dealer had a hand value of", dealersHandValue, "with", dealersHandAmount, "cards")
@@ -178,7 +175,6 @@ def blackjack():
                     print("Better luck next time")
                     print("You now have", bankAccount)
                     gameInProgress = False
-
             else:
                 print("You have gone bust, with a hand containing", playersHandAmount,"cards, with a combined value of", playersHandValue)
                 print("The dealer had a hand value of", dealersHandValue)
@@ -190,10 +186,24 @@ def blackjack():
             
     else:
         print("Please enter a valid amount")
-    
+
+
 def nimTypeZero():
     global bankAccount
     deckOfCards = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3]
+    cardsInDeck = len(deckOfCards)
+    playedCards = []
+    playersHand = []
+    aiPlayers = 3
+    AiHands = []
+    for i in range(aiPlayers):
+        AiHands.append(AiHand())
+    for aiHand in AiHands:
+        for i in range(4):
+            aiHand.hand, deckOfCards, cardsInDeck = drawCard(aiHand.hand, deckOfCards, cardsInDeck)
+    for i in range(4):
+        playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
+    print(f"Your current hand is {playersHand}")
     
 
 
@@ -236,6 +246,12 @@ while bankAccount > 0 and stillGambling == "yes":
             print("You are playing 21")
             while playingAgain == "yes":
                 blackjack()    
+                playingAgain = input("Are you wanting to play again? ")  
+                
+        elif gamblingChoice.lower() == "nim":
+            print("You are playing nim type zero")
+            while playingAgain == "yes":
+                nimTypeZero()
                 playingAgain = input("Are you wanting to play again? ")  
             
         else:
