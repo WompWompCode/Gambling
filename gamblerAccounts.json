@@ -1,0 +1,19 @@
+{
+    "gambler_accounts": [
+        {
+            "account_username": "WompWomp",
+            "account_password": "abc123",
+            "balance": 12221
+        },
+        {
+            "account_username": "WompWomp2",
+            "account_password": "def456",
+            "balance": 18800
+        },
+        {
+            "account_username": "WompWomp3",
+            "account_password": "wd",
+            "balance": 20000
+        }
+    ]
+}
