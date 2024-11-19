@@ -7,6 +7,12 @@ import time
 
 global bankAccount
 
+
+class AiHand:
+    def __init__(self):
+        self.hand = []
+
+
 def updateBalance(bankAccount):
     accountUsername = currentGamblerAccount
     with open("gamblerAccounts.json", "r") as file:
@@ -106,18 +112,6 @@ def blackjack():
             playersHandAmount = len(playersHand)
             cardsInDeck = len(deckOfCards)
 
-        
-        for i in range(dealersHandAmount):
-            if dealersHand[i][2] != "ace":
-                dealersHandValue += dealersHand[i][2]
-            else:
-                aceValue = randint(1,2)
-                if aceValue == 1:
-                    value = 1
-                elif aceValue == 2:
-                    value = 11
-        
-
 
         while gameInProgress == True:
             playersHandValue = 0
@@ -131,7 +125,16 @@ def blackjack():
                     elif aceValue.lower() == "high":
                         playersHandValue += 11
 
-
+            dealersHandValue = 0
+            for i in range(dealersHandAmount):
+                if dealersHand[i][2] != "ace":
+                    dealersHandValue += dealersHand[i][2]
+                else:
+                    aceValue = randint(1,2)
+                    if aceValue == 1:
+                        value = 1
+                    elif aceValue == 2:
+                        value = 11
             
             print("Your current hand is", playersHand, ", worth", playersHandValue)
             if playersHandValue < 21:
@@ -187,11 +190,10 @@ def blackjack():
     else:
         print("Please enter a valid amount")
     
-def nimTypeZero(playerAmount):
+def nimTypeZero():
     global bankAccount
-    deckOfCards = []
-    for i in playerAmount:
-        deckOfCards.append(0, 1, 2, 3)
+    deckOfCards = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3]
+    
 
 
 accountEntered = False
@@ -207,13 +209,12 @@ while accountEntered == False:
     else: 
         print("Sorry, please input a valid answer")
 
-bankAccount = gamblingAccountLogin.gamblerBalance
-print("Your balance is", bankAccount)
-
 with open("gamblerAccounts.json", "r") as file:
     file_data = json.load(file)
     gamblerAccounts = file_data["gambler_accounts"]
 
+bankAccount = gamblingAccountLogin.gamblerBalance
+print("Your balance is", bankAccount)
 bankAccountNumber = gamblingAccountLogin.accountArrayLocation
 
 
