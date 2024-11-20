@@ -2,20 +2,23 @@ import json
 import gamblingAccountLogin
 from gamblingAccountLogin import *
 from random import randint
+from random import choice
 from tkinter import *
 
 global bankAccount
+global accountUsername
 
 
-############ HAND CLASSES ARE A WORK IN PROGRESS #############
 class AiHand:
     def __init__(self):
         self.hand = []
-        
+        nameChoices = ["Steve", "Mishel", "Billy", "Libby", "George", "Finley", "Ethan", "Charlie", "Tio", "Sophie", "Katelyn", "Joseph", "Amy", "Reece", "Shauna"]
+        self.name = choice(nameChoices)
 AiHands = []
 
 
 def updateBalance(bankAccount):
+    global accountUsername
     accountUsername = currentGamblerAccount
     with open("gamblerAccounts.json", "r") as file:
         file_data = json.load(file)
@@ -50,6 +53,7 @@ def placeCard(cardPos, hand, playedCards):
     playedCards.append(cardPlaced)
     del hand[cardPos]
     print(f"Card {cardPlaced} has been placed")
+    return cardPos, hand, playedCards
 
 
 def slots():
@@ -102,7 +106,7 @@ def blackjack():
                     ("queen", "diamonds", 10), ("king", "diamonds", 10),]
     dealersHand = []
     playersHand = []
-    amountGambled = int(input("How much do you wish to bet"))
+    amountGambled = int(input("How much do you wish to bet? "))
     if 0 < amountGambled < bankAccount:
         cardsInDeck = len(deckOfCards)
         gameInProgress = True
@@ -192,6 +196,7 @@ def blackjack():
 
 def nimTypeZero():
     global bankAccount
+    accountUsername = currentGamblerAccount
     deckOfCards = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3]
     cardsInDeck = len(deckOfCards)
     playedCards = []
@@ -199,14 +204,60 @@ def nimTypeZero():
     orderOfPlay = []
     aiPlayers = 3
     AiHands = []
-    for i in range(aiPlayers):
-        AiHands.append(AiHand())
-    for aiHand in AiHands:
-        for i in range(4):
-            aiHand.hand, deckOfCards, cardsInDeck = drawCard(aiHand.hand, deckOfCards, cardsInDeck)
-    for i in range(4):
-        playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
-    print(f"Your current hand is {playersHand}")
+    amountGambled = int(input("How much do you wish to bet? "))
+    if 0 < amountGambled < 1000:
+        gameInProgress = True
+        for i in range(aiPlayers):
+            AiHands.append(AiHand())
+        for aiHand in AiHands:
+            for i in range(aiPlayers+1):
+                aiHand.hand, deckOfCards, cardsInDeck = drawCard(aiHand.hand, deckOfCards, cardsInDeck)
+        for i in range(aiPlayers+1):
+            playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
+        print(f"Your current hand is {playersHand}")
+        orderOfPlay.append(accountUsername)
+        for aiHand in AiHands:
+            orderOfPlay.append(aiHand.name)
+        print(orderOfPlay)
+        
+        while gameInProgress == True:
+            playedCardsValue = 0
+            for i in range(len(orderOfPlay)):
+                playedCardsValue = 0
+                if orderOfPlay[i] == accountUsername:
+                    cardPlaced = int(input(f"What card do you want to play? Your current cards are: {playersHand}. Choose by position in list.")) - 1
+                    cardPlaced, playersHand, playedCards = placeCard(cardPlaced, playersHand, playedCards)
+                else:
+                    for aiHand in AiHands:
+                        if orderOfPlay[i] == aiHand.name:
+                            cardPlaced = randint(0, len(aiHand.hand)-1)
+                            cardPlaced, aiHand.hand, playedCards = placeCard(cardPlaced, aiHand.hand, playedCards)
+                for j in range(len(playedCards)):
+                    playedCardsValue += playedCards[j]
+                print(playedCards)
+                print(f"The current cards add up to {playedCardsValue}")
+                if playedCardsValue >= 9:
+                    print(f"{orderOfPlay[i]} took the play pile count over 9, they lose")
+                    if orderOfPlay[i] == accountUsername:
+                        bankAccount = bankAccount - amountGambled
+                        print("Better luck next time!")
+                        print(f"You now have {bankAccount}")
+                        updateBalance(bankAccount)
+                        gameInProgress = False
+                    else:
+                        for aiHand in AiHands:
+                            if orderOfPlay[i] == aiHand.name:
+                                bankAccount = bankAccount + amountGambled // 3
+                                print(f"{aiHand.name} has lost")
+                                updateBalance(bankAccount)
+                                gameInProgress = False
+                                break
+            
+
+
+
+
+
     
 
 
@@ -235,8 +286,9 @@ bankAccountNumber = gamblingAccountLogin.accountArrayLocation
 playingAgain = "yes"
 stillGambling = "yes"
 while bankAccount > 0 and stillGambling == "yes":
-    stillGambling = input("Are you still wanting to gamble? ")
-    if stillGambling.lower() == "yes":
+    stillGamblingCheck = input("Are you still wanting to gamble? ")
+    if stillGamblingCheck.lower() == "yes":
+        stillGambling = "yes"
         playingAgain = "yes"
         gamblingChoice = input("What game/machine are you wanting to use/play? ")
         if gamblingChoice.lower() == "slots" or gamblingChoice.lower() == "slot machine":
@@ -259,3 +311,6 @@ while bankAccount > 0 and stillGambling == "yes":
             
         else:
             print("please enter a valid option")
+    elif stillGamblingCheck.lower() == "no":
+        stillGambling = "no"
+    else:print("Please choose another option")
