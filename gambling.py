@@ -12,6 +12,7 @@ global accountUsername
 class AiHand:
     def __init__(self):
         self.hand = []
+        self.safeHand = []
         nameChoices = ["Steve", "Mishel", "Billy", "Libby", "George", "Finley", "Ethan", "Charlie", "Tio", "Sophie", "Katelyn", "Joseph", "Amy", "Reece", "Shauna"]
         self.name = choice(nameChoices)
 AiHands = []
@@ -205,15 +206,19 @@ def nimTypeZero():
     aiPlayers = 3
     AiHands = []
     amountGambled = int(input("How much do you wish to bet? "))
-    if 0 < amountGambled < 1000:
+    if 0 < amountGambled < bankAccount:
         gameInProgress = True
+
         for i in range(aiPlayers):
             AiHands.append(AiHand())
+
         for aiHand in AiHands:
             for i in range(aiPlayers+1):
                 aiHand.hand, deckOfCards, cardsInDeck = drawCard(aiHand.hand, deckOfCards, cardsInDeck)
+
         for i in range(aiPlayers+1):
             playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
+        
         print(f"Your current hand is {playersHand}")
         orderOfPlay.append(accountUsername)
         for aiHand in AiHands:
@@ -223,37 +228,74 @@ def nimTypeZero():
         while gameInProgress == True:
             playedCardsValue = 0
             for i in range(len(orderOfPlay)):
-                playedCardsValue = 0
-                if orderOfPlay[i] == accountUsername:
-                    cardPlaced = int(input(f"What card do you want to play? Your current cards are: {playersHand}. Choose by position in list.")) - 1
-                    cardPlaced, playersHand, playedCards = placeCard(cardPlaced, playersHand, playedCards)
-                else:
-                    for aiHand in AiHands:
-                        if orderOfPlay[i] == aiHand.name:
-                            cardPlaced = randint(0, len(aiHand.hand)-1)
-                            cardPlaced, aiHand.hand, playedCards = placeCard(cardPlaced, aiHand.hand, playedCards)
-                for j in range(len(playedCards)):
-                    playedCardsValue += playedCards[j]
-                print(playedCards)
-                print(f"The current cards add up to {playedCardsValue}")
-                if playedCardsValue >= 9:
-                    print(f"{orderOfPlay[i]} took the play pile count over 9, they lose")
+                if gameInProgress == True:
+                    playedCardsValue = 0
                     if orderOfPlay[i] == accountUsername:
-                        bankAccount = bankAccount - amountGambled
-                        print("Better luck next time!")
-                        print(f"You now have {bankAccount}")
-                        updateBalance(bankAccount)
-                        gameInProgress = False
+                        cardPlaced = int(input(f"What card do you want to play? Your current cards are: {playersHand}. Choose by position in list.")) - 1
+                        cardPlaced, playersHand, playedCards = placeCard(cardPlaced, playersHand, playedCards)
                     else:
                         for aiHand in AiHands:
                             if orderOfPlay[i] == aiHand.name:
-                                bankAccount = bankAccount + amountGambled // 3
-                                print(f"{aiHand.name} has lost")
-                                updateBalance(bankAccount)
-                                gameInProgress = False
-                                break
-            
+                                for j2 in range(len(playedCards)):
+                                    playedCardsValue += playedCards[j2]
 
+                                for card in range(len(aiHand.hand)):
+                                    if not (aiHand.hand[card] + playedCardsValue >= 9):
+                                        aiHand.safeHand.append(aiHand.hand[card])
+
+                                if len(aiHand.safeHand)  >= 1:
+                                    cardPlaced = randint(0, len(aiHand.safeHand)-1)
+                                    #these 4 lines basically fix the safe hand positioning so that its in the correct part of the normal hand and it therefore picks the right card
+                                    #basically teaches the ai the difference between the cards it can place down this turn and NOT die, and the ones thatll just lose it this turn
+                                    cardPlaced = aiHand.safeHand[cardPlaced]
+                                    for card in range(len(aiHand.hand)):
+                                        if aiHand.hand[card] == cardPlaced:
+                                            cardPlaced = card
+                                            break
+
+                                else:
+                                    cardPlaced = randint(0, len(aiHand.hand)-1)
+
+                                cardPlaced, aiHand.hand, playedCards = placeCard(cardPlaced, aiHand.hand, playedCards) 
+                                aiHand.safeHand = []
+                                playedCardsValue = 0    
+
+                    for j in range(len(playedCards)):
+                        playedCardsValue += playedCards[j]
+                    print(playedCards)
+                    print(f"The current cards add up to {playedCardsValue}")
+
+                    if playedCardsValue >= 9:
+                        print(f"{orderOfPlay[i]} took the play pile count over 9, they lose")
+                        if orderOfPlay[i] == accountUsername:
+                            bankAccount = bankAccount - amountGambled
+                            print("Better luck next time!")
+                            print(f"You now have {bankAccount}")
+                            updateBalance(bankAccount)
+                            gameInProgress = False
+
+                        else:
+                            for aiHand in AiHands:
+                                if orderOfPlay[i] == aiHand.name:
+                                    bankAccount = bankAccount + amountGambled // 3
+                                    print(f"{aiHand.name} has lost")
+                                    updateBalance(bankAccount)
+                                    gameInProgress = False
+                                    break
+
+def poker():
+    global bankAccount
+    deckOfCards = [("ace", "spades", "ace"), ("two", "spades", 2), ("three", "spades", 3), ("four", "spades", 4), ("five", "spades", 5),
+                    ("six", "spades", 6), ("seven", "spades", 7), ("eight", "spades", 8), ("nine", "spades", 9), ("ten", "spades", 10), 
+                    ("jack", "spades", 10),("queen", "spades", 10), ("king", "spades", 10),  ("ace", "clubs", "ace"), ("two", "clubs", 2), 
+                    ("three", "clubs", 3), ("four", "clubs", 4),("five", "clubs", 5), ("six", "clubs", 6), ("seven", "clubs", 7),
+                    ("eight", "clubs", 8), ("nine", "clubs", 9), ("ten", "clubs", 10),("jack", "clubs", 10), ("queen", "clubs", 10),
+                    ("king", "clubs", 10),  ("ace", "hearts", "ace"), ("two", "hearts", 2), ("three", "hearts", 3),("four", "hearts", 4),
+                    ("five", "hearts", 5), ("six", "hearts", 6), ("seven", "hearts", 7), ("eight", "hearts", 8), ("nine", "hearts", 9),
+                    ("ten", "hearts", 10), ("jack", "hearts", 10), ("queen", "hearts", 10), ("king", "hearts", 10),  ("ace", "diamonds", "ace"),
+                    ("two", "diamonds", 2), ("three", "diamonds", 3), ("four", "diamonds", 4), ("five", "diamonds", 5), ("six", "diamonds", 6),
+                    ("seven", "diamonds", 7), ("eight", "diamonds", 8), ("nine", "diamonds", 9), ("ten", "diamonds", 10), ("jack", "diamonds", 10), 
+                    ("queen", "diamonds", 10), ("king", "diamonds", 10),]
 
 
 
@@ -307,6 +349,12 @@ while bankAccount > 0 and stillGambling == "yes":
             print("You are playing nim type zero")
             while playingAgain == "yes":
                 nimTypeZero()
+                playingAgain = input("Are you wanting to play again? ")  
+        
+        elif gamblingChoice.lower() == "poker":
+            print("You are playing poker")
+            while playingAgain == "yes":
+                poker()    
                 playingAgain = input("Are you wanting to play again? ")  
             
         else:

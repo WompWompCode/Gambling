@@ -21,15 +21,17 @@ def accountRegistration():
         accountUserReg = input("Please choose an account username ")
         accountPassReg = input("Please create an account password ")
         accountPassRegConfirm = input("Please re-enter your account password ")
+
         for i in range(len(gamblerAccounts)):
             while registrationAttempt == "ongoing":
                 if gamblerAccounts[i]["account_username"] != accountUserReg:
                     if accountPassReg == accountPassRegConfirm:
                         print("Account has been made. Your username is", accountUserReg, "and your password is", accountPassReg)
-                        registrationAttempt = "success"
+                        registrationAttempt = "success"    
                     else:
                         print("Your passwords do not match, please try again")
                         registrationAttempt = "fail"
+                        
                 else:
                     print("This username is already taken, please try another")
                     registrationAttempt = "fail"
@@ -68,7 +70,3 @@ def accountLogin():
                 else:
                     print("Invalid Username")
                     loginAttempt = "fail"
-
-
-
-            
