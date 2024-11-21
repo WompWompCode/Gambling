@@ -59,7 +59,6 @@ def placeCard(cardPos, hand, playedCards):
 
 def slots():
     global bankAccount
-    print("You are using the slot machine")
     amountGambled = int(input("How much money are you wanting to gamble? "))
     if 0 < amountGambled < 1000:
         print("You have chosen to gamble", amountGambled)
@@ -296,6 +295,12 @@ def poker():
                     ("two", "diamonds", 2), ("three", "diamonds", 3), ("four", "diamonds", 4), ("five", "diamonds", 5), ("six", "diamonds", 6),
                     ("seven", "diamonds", 7), ("eight", "diamonds", 8), ("nine", "diamonds", 9), ("ten", "diamonds", 10), ("jack", "diamonds", 10), 
                     ("queen", "diamonds", 10), ("king", "diamonds", 10),]
+    playersHand = []
+    orderOfPlay = []
+    aiPlayers = 5
+    AiHands = []
+
+    amountGambled = int(input("How much do you wish to bet? "))
 
 
 
@@ -333,12 +338,14 @@ while bankAccount > 0 and stillGambling == "yes":
         stillGambling = "yes"
         playingAgain = "yes"
         gamblingChoice = input("What game/machine are you wanting to use/play? ")
+
+
         if gamblingChoice.lower() == "slots" or gamblingChoice.lower() == "slot machine":
             while playingAgain == "yes":
+                print("You are using the slot machine")
                 slots(bankAccount)
                 playingAgain = input("Are you wanting to play again? ")
                 
-
         elif gamblingChoice.lower() == "blackjack" or gamblingChoice.lower() == "21":
             print("You are playing 21")
             while playingAgain == "yes":
