@@ -59,7 +59,10 @@ def placeCard(cardPos, hand, playedCards):
 
 def slots():
     global bankAccount
-    amountGambled = int(input("How much money are you wanting to gamble? "))
+    amountGambled = input("How much do you wish to gamble? ")
+    while amountGambled.isdigit() == False:
+        amountGambled = input("How much do you wish to gamble? ")
+    amountGambled = int(amountGambled)
     if 0 < amountGambled < 1000:
         print("You have chosen to gamble", amountGambled)
         wheel1 = randint(1, 7)
@@ -85,11 +88,13 @@ def slots():
             bankAccount = bankAccount - amountGambled
             print("Better luck next time!")
             print("You now have", bankAccount)
+            
+        updateBalance(bankAccount)
+        
     elif amountGambled > 1000:
         print("Please pick a lower amount")
     else:
         print("Please pick a valid number")
-    updateBalance(bankAccount)
     
 def blackjack():
     global bankAccount
@@ -106,7 +111,10 @@ def blackjack():
                     ("queen", "diamonds", 10), ("king", "diamonds", 10),]
     dealersHand = []
     playersHand = []
-    amountGambled = int(input("How much do you wish to bet? "))
+    amountGambled = input("How much do you wish to bet? ")
+    while amountGambled.isdigit() == False:
+        amountGambled = input("How much do you wish to bet? ")
+    amountGambled = int(amountGambled)
     if 0 < amountGambled < bankAccount:
         cardsInDeck = len(deckOfCards)
         gameInProgress = True
@@ -130,11 +138,18 @@ def blackjack():
                 if playersHand[i][2] != "ace":
                     playersHandValue += playersHand[i][2]
                 else:
-                    aceValue = input("Is your ace low or high?")
-                    if aceValue.lower() == "low":
-                        playersHandValue += 1
-                    elif aceValue.lower() == "high":
-                        playersHandValue += 11
+                    aceValueassigned = False
+                    while aceValueassigned == False:  
+                        aceValue = input("Is your ace low or high?")
+                        if aceValue.lower() == "low":
+                            playersHandValue += 1
+                            aceValueassigned = True
+                        elif aceValue.lower() == "high":
+                            playersHandValue += 11
+                            aceValueassigned = True
+                        else:
+                            print("thats not a valid option idiot")
+                        
 
             dealersHandValue = 0
             for i in range(dealersHandAmount):
@@ -204,7 +219,12 @@ def nimTypeZero():
     orderOfPlay = []
     aiPlayers = 3
     AiHands = []
-    amountGambled = int(input("How much do you wish to bet? "))
+    
+    amountGambled = input("How much do you wish to bet? ")
+    while amountGambled.isdigit() == False:
+        amountGambled = input("How much do you wish to bet? ")
+    amountGambled = int(amountGambled)
+        
     if 0 < amountGambled < bankAccount:
         gameInProgress = True
 
@@ -230,7 +250,10 @@ def nimTypeZero():
                 if gameInProgress == True:
                     playedCardsValue = 0
                     if orderOfPlay[i] == accountUsername:
-                        cardPlaced = int(input(f"What card do you want to play? Your current cards are: {playersHand}. Choose by position in list.")) - 1
+                        cardPlaced = input(f"What card do you want to play? Your current cards are: {playersHand}. Choose by position in list.")
+                        while cardPlaced.isdigit() == False:
+                            cardPlaced = input(f"What card do you want to play? Your current cards are: {playersHand}. Choose by position in list.")
+                        cardPlaced = int(cardPlaced) -1
                         cardPlaced, playersHand, playedCards = placeCard(cardPlaced, playersHand, playedCards)
                     else:
                         for aiHand in AiHands:
@@ -281,9 +304,13 @@ def nimTypeZero():
                                     updateBalance(bankAccount)
                                     gameInProgress = False
                                     break
+                                
+    else:
+        print("Please pick a valid amount")
 
 def poker():
     global bankAccount
+    #need to change the values of the cards, literally just stole them from my blackjack code
     deckOfCards = [("ace", "spades", "ace"), ("two", "spades", 2), ("three", "spades", 3), ("four", "spades", 4), ("five", "spades", 5),
                     ("six", "spades", 6), ("seven", "spades", 7), ("eight", "spades", 8), ("nine", "spades", 9), ("ten", "spades", 10), 
                     ("jack", "spades", 10),("queen", "spades", 10), ("king", "spades", 10),  ("ace", "clubs", "ace"), ("two", "clubs", 2), 
@@ -300,12 +327,13 @@ def poker():
     aiPlayers = 5
     AiHands = []
 
-    amountGambled = int(input("How much do you wish to bet? "))
+    amountGambled = input("How much do you wish to bet? ")
+    while amountGambled.isdigit() == False:
+        amountGambled = input("How much do you wish to bet? ")
+    amountGambled = int(amountGambled)
 
 
 
-
-    
 
 
 accountEntered = False
@@ -337,13 +365,13 @@ while bankAccount > 0 and stillGambling == "yes":
     if stillGamblingCheck.lower() == "yes":
         stillGambling = "yes"
         playingAgain = "yes"
-        gamblingChoice = input("What game/machine are you wanting to use/play? ")
+        gamblingChoice = input("What game/machine are you wanting to use/play?\n Current games are: \nBlackjack/21\nSlots\nNim\n \n**Poker is on the way**\n")
 
 
         if gamblingChoice.lower() == "slots" or gamblingChoice.lower() == "slot machine":
             while playingAgain == "yes":
                 print("You are using the slot machine")
-                slots(bankAccount)
+                slots()
                 playingAgain = input("Are you wanting to play again? ")
                 
         elif gamblingChoice.lower() == "blackjack" or gamblingChoice.lower() == "21":
@@ -361,7 +389,8 @@ while bankAccount > 0 and stillGambling == "yes":
         elif gamblingChoice.lower() == "poker":
             print("You are playing poker")
             while playingAgain == "yes":
-                poker()    
+                #poker()    
+                print("Still in progress, come back later")
                 playingAgain = input("Are you wanting to play again? ")  
             
         else:

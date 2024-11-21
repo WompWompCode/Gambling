@@ -27,6 +27,7 @@ def accountRegistration():
                 if gamblerAccounts[i]["account_username"] != accountUserReg:
                     if accountPassReg == accountPassRegConfirm:
                         print("Account has been made. Your username is", accountUserReg, "and your password is", accountPassReg)
+                        print("Due to reasons im not working out rn, you have to end the program and start it again for the login to actually work with a just-made account")
                         registrationAttempt = "success"    
                     else:
                         print("Your passwords do not match, please try again")
