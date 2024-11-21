@@ -13,7 +13,7 @@ class AiHand:
     def __init__(self):
         self.hand = []
         self.safeHand = []
-        nameChoices = ["Steve", "Mishel", "Billy", "Libby", "George", "Finley", "Ethan", "Charlie", "Tio", "Sophie", "Katelyn", "Joseph", "Amy", "Reece", "Shauna"]
+        nameChoices = ["Steve", "Mishel", "Billy", "Libby", "George", "Finley", "Ethan", "Charlie", "Tio", "Sophie", "Katelyn", "Joseph", "Amy", "Reece", "Shauna", "Zak"]
         self.name = choice(nameChoices)
 AiHands = []
 
