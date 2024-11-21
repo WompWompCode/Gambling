@@ -333,7 +333,8 @@ def poker():
     amountGambled = int(amountGambled)
 
 
-
+def roulette():
+    global bankAccount
 
 
 accountEntered = False
@@ -365,7 +366,7 @@ while bankAccount > 0 and stillGambling == "yes":
     if stillGamblingCheck.lower() == "yes":
         stillGambling = "yes"
         playingAgain = "yes"
-        gamblingChoice = input("What game/machine are you wanting to use/play?\n Current games are: \nBlackjack/21\nSlots\nNim\n \n**Poker is on the way**\n")
+        gamblingChoice = input("What game/machine are you wanting to use/play?\n Current games are: \nBlackjack/21\nSlots\nNim\n \n**Poker and roulette are on the way**\n")
 
 
         if gamblingChoice.lower() == "slots" or gamblingChoice.lower() == "slot machine":
