@@ -355,10 +355,9 @@ with open("gamblerAccounts.json", "r") as file:
     gamblerAccounts = file_data["gambler_accounts"]
 
 bankAccount = gamblingAccountLogin.gamblerBalance
-print("Your balance is", bankAccount)
 bankAccountNumber = gamblingAccountLogin.accountArrayLocation
 
-
+print("Your balance is", bankAccount)
 playingAgain = "yes"
 stillGambling = "yes"
 while bankAccount > 0 and stillGambling == "yes":
@@ -387,12 +386,6 @@ while bankAccount > 0 and stillGambling == "yes":
                 nimTypeZero()
                 playingAgain = input("Are you wanting to play again? ")  
         
-        elif gamblingChoice.lower() == "poker":
-            print("You are playing poker")
-            while playingAgain == "yes":
-                #poker()    
-                print("Still in progress, come back later")
-                playingAgain = input("Are you wanting to play again? ")  
             
         else:
             print("please enter a valid option")
