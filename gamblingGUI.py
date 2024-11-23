@@ -1,5 +1,3 @@
-
-
 #######################################
 #THIS ENTIRE FILE IS A WORK IN PROGRESS
 #######################################
@@ -24,9 +22,9 @@ class Button():
         self.width = width
         self.height = height
         self.colour = colour
-        ButtonList.append(self)
         self.inUse = False
         self.text = text
+        ButtonList.append(self)
         
         
     def draw(self):
@@ -35,48 +33,92 @@ class Button():
             if self.text != "none":
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
-    def clicked(self):
-        if self.name == "menuBeginGamblingButton":
-            gamblingMenu()
-        elif self.name == "gamblingStartButton":
-            (" ")
+    def clicked(self, programPage, clickTimer):
+        if clickTimer <= 0:
+            match self.name:
+
+                case "EnterAccount":
+                    programPage = "Login Menu"
+                
+                case "BeginGambling":
+                    programPage = "Gambling Menu"
+
+                #Blackjack#
+                case "blackjackStart":
+                    programPage = "Blackjack"
+
+
+                case "slotsStart":
+                    programPage = "Slots"
+
+                case "nimStart":
+                    programPage = "Nim"
+        
+        clickTimer = 80
+        return programPage, clickTimer
 
 ButtonList = []
-menuBeginGamblingButton = Button("menuBeginGamblingButton", 760, 700, 400, 150, (255, 0 , 0), ("Start Gambling", (255, 255, 255),770, 720))
-gamblingStartButton = Button("gamblingStartButton", 760, 700, 400, 150, (0,0,255), ("Play Blackjack", (255, 255, 255),770, 720))
+textFont = pygame.font.SysFont("Arial", 40)
+BeginGamblingButton = Button("BeginGambling", 760, 700, 400, 150, (255, 0 , 0), ("Start Gambling", (255, 255, 255),850, 725))
+EnterAccountButton = Button("EnterAccount", 350, 700, 400, 150, (0,0,200), ("Login/Register", (255, 255, 255),450, 725))
 
-def mainMenu():
-    for buttons in ButtonList:
-        buttons.inUse = False
-    menuBeginGamblingButton.inUse = True
-    
-def gamblingMenu():
-    for buttons in ButtonList:
-        buttons.inUse = False
-    gamblingStartButton.inUse = True
+AccountLoginButton = Button("AccountLogin", 450, 700, 400, 150, (0,0,200), ("Login", (255, 255, 255),600, 725))
+AccountRegisterButton = Button("AccountRegister", 1070, 700, 400, 150, (0,0,200), ("Register", (255, 255, 255),1220, 725))
+
+blackjackStartButton = Button("blackjackStart", 760, 700, 400, 150, (0,0,255), ("Play Blackjack", (255, 255, 255),850, 725))
+blackjackHitButton = Button("blackjackHit", 450, 700, 400, 150, (0,0,200), ("Hit", (255, 255, 255),600, 725))
+blackjackStandButton = Button("blackjackStand", 1070, 700, 400, 150, (0,0,200), ("Stand", (255, 255, 255),1220, 725))
+
+slotsStartButton = Button("slotsStart", 350, 700, 400, 150, (0,0,255), ("Play Slots", (255, 255, 255),470, 725))
+slotsRollButton = Button("slotsRoll", 710, 700, 500, 150, (0,0,255), ("Roll", (255, 255, 255),670, 725))
+
+nimStartButton = Button("nimStart", 1170, 700, 400, 150, (0,0,255), ("Play Nim Type Zero", (255, 255, 255),1230, 725))
 
 
+programPage = "Main Menu"
+clickTimer = 0
 
-
-
-mainMenu()
 
 run = True
 while run == True:
+    if clickTimer > 0:
+        clickTimer -=1
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
             
     window.fill((155, 155, 155))
-    
     mouseX, mouseY = pygame.mouse.get_pos()
     
     
     for buttons in ButtonList:
         if buttons.x < mouseX < buttons.x + buttons.width and buttons.y < mouseY < buttons.y + buttons.height and buttons.inUse == True and pygame.mouse.get_pressed()[0]:
-            buttons.clicked()
+            programPage, clickTimer = buttons.clicked(programPage, clickTimer)
         buttons.draw()
+        buttons.inUse = False
+
+    match programPage:
+
+        case "Main Menu":
+            BeginGamblingButton.inUse = True
+            EnterAccountButton.inUse = True
+
+        case "Login Menu":
+            AccountLoginButton.inUse = True
+            AccountRegisterButton.inUse = True
+
+        case "Gambling Menu":
+            blackjackStartButton.inUse = True
+            slotsStartButton.inUse = True
+            nimStartButton.inUse = True
+
+        case "Blackjack":
+            blackjackHitButton.inUse = True
+            blackjackStandButton.inUse = True
+
+        case "Slots":
+            slotsRollButton.inUse = True
     
     
     pygame.display.update()
