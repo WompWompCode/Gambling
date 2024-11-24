@@ -2,12 +2,17 @@
 #THIS ENTIRE FILE IS A WORK IN PROGRESS
 #######################################
 
-
+from random import randint
 import pygame
 pygame.init()
 window = pygame.display.set_mode([1920, 1080])
 
 textFont = pygame.font.SysFont("Arial", 30)
+
+wheel1 = randint(1, 7)
+wheel2 = randint(1, 7)
+wheel3 = randint(1, 7)
+
 
 def drawText(text, colour, x, y):
     img = textFont.render(text, True, colour)
@@ -43,19 +48,28 @@ class Button():
                 case "BeginGambling":
                     programPage = "Gambling Menu"
 
-                #Blackjack#
+
                 case "blackjackStart":
                     programPage = "Blackjack"
+                
 
 
                 case "slotsStart":
                     programPage = "Slots"
 
+                case "slotsRoll":
+                    wheel1 = randint(1, 7)
+                    wheel2 = randint(1, 7)
+                    wheel3 = randint(1, 7)
+                    print(wheel1, wheel2, wheel3)
+                    return programPage, 60, wheel1, wheel2, wheel3
+
                 case "nimStart":
                     programPage = "Nim"
         
-        clickTimer = 80
-        return programPage, clickTimer
+
+        
+        return programPage, 60
 
 ButtonList = []
 textFont = pygame.font.SysFont("Arial", 40)
@@ -70,7 +84,10 @@ blackjackHitButton = Button("blackjackHit", 450, 700, 400, 150, (0,0,200), ("Hit
 blackjackStandButton = Button("blackjackStand", 1070, 700, 400, 150, (0,0,200), ("Stand", (255, 255, 255),1220, 725))
 
 slotsStartButton = Button("slotsStart", 350, 700, 400, 150, (0,0,255), ("Play Slots", (255, 255, 255),470, 725))
-slotsRollButton = Button("slotsRoll", 710, 700, 500, 150, (0,0,255), ("Roll", (255, 255, 255),670, 725))
+slotsRollButton = Button("slotsRoll", 710, 700, 500, 150, (0,0,255), ("Roll", (255, 255, 255),920, 725))
+slotsWheel1Button = Button("slotsWheel1", 710, 400, 100, 100, (100, 0, 155), (str(wheel1), (255, 255, 255), 750, 425))
+slotsWheel2Button = Button("slotsWheel2", 910, 400, 100, 100, (100, 0, 155), (str(wheel2), (255, 255, 255), 950, 425))
+slotsWheel3Button = Button("slotsWheel3", 1110, 400, 100, 100, (100, 0, 155), (str(wheel3), (255, 255, 255), 1150, 425))
 
 nimStartButton = Button("nimStart", 1170, 700, 400, 150, (0,0,255), ("Play Nim Type Zero", (255, 255, 255),1230, 725))
 
@@ -94,7 +111,18 @@ while run == True:
     
     for buttons in ButtonList:
         if buttons.x < mouseX < buttons.x + buttons.width and buttons.y < mouseY < buttons.y + buttons.height and buttons.inUse == True and pygame.mouse.get_pressed()[0]:
-            programPage, clickTimer = buttons.clicked(programPage, clickTimer)
+            if clickTimer <= 0:
+                match buttons.name:
+                    case "slotsRoll":
+                        programPage, clickTimer, wheel1, wheel2, wheel3 = buttons.clicked(programPage, clickTimer)
+                        slotsWheel1Button = Button("slotsWheel1", 710, 400, 100, 100, (100, 0, 155), (str(wheel1), (255, 255, 255), 750, 425))
+                        slotsWheel2Button = Button("slotsWheel2", 910, 400, 100, 100, (100, 0, 155), (str(wheel2), (255, 255, 255), 950, 425))
+                        slotsWheel3Button = Button("slotsWheel3", 1110, 400, 100, 100, (100, 0, 155), (str(wheel3), (255, 255, 255), 1150, 425))
+
+                    case _: #basically the else of switch statements
+                        programPage, clickTimer = buttons.clicked(programPage, clickTimer)
+            else:
+                programPage, clickTimer = buttons.clicked(programPage, clickTimer)
         buttons.draw()
         buttons.inUse = False
 
@@ -119,6 +147,10 @@ while run == True:
 
         case "Slots":
             slotsRollButton.inUse = True
+            slotsWheel1Button.inUse = True
+            slotsWheel2Button.inUse = True
+            slotsWheel3Button.inUse = True
+
     
     
     pygame.display.update()
