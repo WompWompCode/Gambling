@@ -151,7 +151,7 @@ while run == True:
         buttons.draw()
         buttons.inUse = False
 
-    if programPage != "Main Menu":
+    if programPage != "Main Menu": #once u add blackjack and nim, add a game in progress variable and make this only show up when a game isnt in progress
         BackButton.inUse = True
 
     match programPage:
