@@ -9,6 +9,7 @@ window = pygame.display.set_mode([1920, 1080])
 
 textFont = pygame.font.SysFont("Arial", 30)
 
+bankAccount = 1000
 wheel1 = randint(1, 7)
 wheel2 = randint(1, 7)
 wheel3 = randint(1, 7)
@@ -38,7 +39,7 @@ class Button():
             if self.text != "none":
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
-    def clicked(self, programPage, clickTimer):
+    def clicked(self, programPage, clickTimer, bankAccount):
         if clickTimer <= 0:
             match self.name:
 
@@ -61,15 +62,28 @@ class Button():
                     wheel1 = randint(1, 7)
                     wheel2 = randint(1, 7)
                     wheel3 = randint(1, 7)
-                    print(wheel1, wheel2, wheel3)
-                    return programPage, 60, wheel1, wheel2, wheel3
+                    if wheel1 == 7 and wheel2 == 7 and wheel3 == 7:
+                        amountWon = int(500)
+                        bankAccount = bankAccount + amountWon 
+
+                    elif (4 < wheel1 and 4 < wheel2 and 4 < wheel3):
+                        amountWon = int(50)
+                        bankAccount = bankAccount + amountWon
+
+                    elif (4 <= wheel1 <= 7 and 4 <= wheel2 <= 7) or (4 <= wheel1 <= 7 and 4 <= wheel3 <= 7) or (4 <= wheel2 <= 7 and 4 <= wheel3 <= 7):
+                        amountWon = int(20)
+                        bankAccount = bankAccount + amountWon
+
+                    else:
+                        bankAccount = bankAccount - 50
+                    return programPage, 80, bankAccount, wheel1, wheel2, wheel3
 
                 case "nimStart":
                     programPage = "Nim"
         
 
         
-        return programPage, 60
+        return programPage, 80, bankAccount
 
 ButtonList = []
 textFont = pygame.font.SysFont("Arial", 40)
@@ -107,6 +121,8 @@ while run == True:
             
     window.fill((155, 155, 155))
     mouseX, mouseY = pygame.mouse.get_pos()
+
+    drawText(f"Bank Account: {bankAccount}", (255, 255, 255),1600, 25)
     
     
     for buttons in ButtonList:
@@ -114,15 +130,15 @@ while run == True:
             if clickTimer <= 0:
                 match buttons.name:
                     case "slotsRoll":
-                        programPage, clickTimer, wheel1, wheel2, wheel3 = buttons.clicked(programPage, clickTimer)
+                        programPage, clickTimer, bankAccount, wheel1, wheel2, wheel3 = buttons.clicked(programPage, clickTimer, bankAccount)
                         slotsWheel1Button = Button("slotsWheel1", 710, 400, 100, 100, (100, 0, 155), (str(wheel1), (255, 255, 255), 750, 425))
                         slotsWheel2Button = Button("slotsWheel2", 910, 400, 100, 100, (100, 0, 155), (str(wheel2), (255, 255, 255), 950, 425))
                         slotsWheel3Button = Button("slotsWheel3", 1110, 400, 100, 100, (100, 0, 155), (str(wheel3), (255, 255, 255), 1150, 425))
 
                     case _: #basically the else of switch statements
-                        programPage, clickTimer = buttons.clicked(programPage, clickTimer)
+                        programPage, clickTimer, bankAccount = buttons.clicked(programPage, clickTimer, bankAccount)
             else:
-                programPage, clickTimer = buttons.clicked(programPage, clickTimer)
+                programPage, clickTimer, bankAccount = buttons.clicked(programPage, clickTimer, bankAccount)
         buttons.draw()
         buttons.inUse = False
 
