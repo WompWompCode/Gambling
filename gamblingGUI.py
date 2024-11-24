@@ -43,6 +43,14 @@ class Button():
         if clickTimer <= 0:
             match self.name:
 
+                case "Back":
+                    match programPage:
+                        case "Login Menu" | "Gambling Menu":
+                            programPage = "Main Menu"
+
+                        case "Blackjack" | "Slots" | "Nim":
+                            programPage = "Gambling Menu"
+
                 case "EnterAccount":
                     programPage = "Login Menu"
                 
@@ -87,6 +95,7 @@ class Button():
 
 ButtonList = []
 textFont = pygame.font.SysFont("Arial", 40)
+BackButton = Button("Back", 1700, 900, 100, 100, (255, 0, 0), ("Back", (255, 255, 255), 1710, 920))
 BeginGamblingButton = Button("BeginGambling", 760, 700, 400, 150, (255, 0 , 0), ("Start Gambling", (255, 255, 255),850, 725))
 EnterAccountButton = Button("EnterAccount", 350, 700, 400, 150, (0,0,200), ("Login/Register", (255, 255, 255),450, 725))
 
@@ -142,6 +151,9 @@ while run == True:
         buttons.draw()
         buttons.inUse = False
 
+    if programPage != "Main Menu":
+        BackButton.inUse = True
+
     match programPage:
 
         case "Main Menu":
@@ -166,6 +178,7 @@ while run == True:
             slotsWheel1Button.inUse = True
             slotsWheel2Button.inUse = True
             slotsWheel3Button.inUse = True
+            drawText("SLOTS", (255, 255, 255),910, 25)
 
     
     
