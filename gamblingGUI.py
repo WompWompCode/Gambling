@@ -9,6 +9,8 @@ window = pygame.display.set_mode([1920, 1080])
 
 textFont = pygame.font.SysFont("Arial", 30)
 
+global programPage, clickTimer, bankAccount
+
 bankAccount = 1000
 wheel1 = randint(1, 7)
 wheel2 = randint(1, 7)
@@ -60,7 +62,8 @@ class Button():
             if self.text[0] != "none":
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
-    def clicked(self, programPage, clickTimer, bankAccount):
+    def clicked(self):
+        global programPage, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, wheel1, wheel2, wheel3
         if clickTimer <= 0:
             for interacts in InteractList[1]:
                 interacts.inputFinished = False
@@ -121,8 +124,39 @@ class Button():
                     while playersHandAmount < 2:
                         playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
                         playersHandAmount = len(playersHand)
+
+                    playersHandValue = 0
+                    for i in range(playersHandAmount):
+                        if playersHand[i][2] != "ace":
+                            playersHandValue += playersHand[i][2]
+                        else:
+                            aceValueassigned = False
+                            while aceValueassigned == False:  
+                                aceValue = input("Is your ace low or high?")
+                                if aceValue.lower() == "low":
+                                    playersHandValue += 1
+                                    aceValueassigned = True
+                                elif aceValue.lower() == "high":
+                                    playersHandValue += 11
+                                    aceValueassigned = True
+                                else:
+                                    print("thats not a valid option idiot")
+                                
+
+                    dealersHandValue = 0
+                    for i in range(dealersHandAmount):
+                        if dealersHand[i][2] != "ace":
+                            dealersHandValue += dealersHand[i][2]
+                        else:
+                            aceValue = randint(1,2)
+                            if aceValue == 1:
+                                value = 1
+                            elif aceValue == 2:
+                                value = 11
+
+                        
                     
-                    return programPage, 80, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress
+
                     
                     
                 case "AccountLogin":
@@ -140,8 +174,25 @@ class Button():
                             playersHand.append(cardDrawn)
                             break
                     cardsInDeck = len(deckOfCards)
-                    return programPage, 80, bankAccount, deckOfCards, cardsInDeck, playersHand, playersHandAmount, playersHandValue
-                    
+                    playersHandAmount = len(playersHand)
+
+                    playersHandValue = 0
+                    for i in range(playersHandAmount):
+                        if playersHand[i][2] != "ace":
+                            playersHandValue += playersHand[i][2]
+                        else:
+                            aceValueassigned = False
+                            while aceValueassigned == False:  
+                                aceValue = input("Is your ace low or high?")
+                                if aceValue.lower() == "low":
+                                    playersHandValue += 1
+                                    aceValueassigned = True
+                                elif aceValue.lower() == "high":
+                                    playersHandValue += 11
+                                    aceValueassigned = True
+                                else:
+                                    print("thats not a valid option idiot")
+                                
                 
 
 
@@ -166,14 +217,14 @@ class Button():
 
                     else:
                         bankAccount = bankAccount - 50
-                    return programPage, 80, bankAccount, wheel1, wheel2, wheel3
 
                 case "nimStart":
                     programPage = "Nim"
+
+            clickTimer = 80
         
 
         
-        return programPage, 80, bankAccount
 
 
 textFont = pygame.font.SysFont("Arial", 40)
@@ -225,7 +276,8 @@ class InputBox():
             if self.text[0] != "none":
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
-    def clicked(self, programPage, clickTimer, bankAccount):
+    def clicked(self):
+        global programPage, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, wheel1, wheel2, wheel3
         if clickTimer <= 0:
             for interacts in InteractList[1]:
                 interacts.inputFinished = False
@@ -240,8 +292,7 @@ class InputBox():
                 case "LoginInputPassword":
                     LoginInputPasswordButton.active = True
                     
-                    
-        return programPage, 80, bankAccount
+        
         
     def inputFinishedFunc(self, inputText):
         self.inputText = inputText
@@ -297,25 +348,19 @@ while run:
             if clickTimer <= 0:
                 match interacts.name:
                     case "slotsRoll":
-                        programPage, clickTimer, bankAccount, wheel1, wheel2, wheel3 = interacts.clicked(programPage, clickTimer, bankAccount)
+                        interacts.clicked()
                         slotsWheel1Button = Button("slotsWheel1", 710, 400, 100, 100, (100, 0, 155), (str(wheel1), (255, 255, 255), 750, 425))
                         slotsWheel2Button = Button("slotsWheel2", 910, 400, 100, 100, (100, 0, 155), (str(wheel2), (255, 255, 255), 950, 425))
                         slotsWheel3Button = Button("slotsWheel3", 1110, 400, 100, 100, (100, 0, 155), (str(wheel3), (255, 255, 255), 1150, 425))
-
-                    case "blackjackStart":
-                        programPage, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress = interacts.clicked(programPage, clickTimer, bankAccount)
-                        
-                    case "blackjackHit":
-                        programPage, clickTimer, bankAccount, deckOfCards, cardsInDeck, playersHand, playersHandAmount, playersHandValue = interacts.clicked(programPage, clickTimer, bankAccount, deckOfCards, cardsInDeck, playersHand, playersHandAmount, playersHandValue)
                     
                     case _: #basically the else of switch statements
-                        programPage, clickTimer, bankAccount = interacts.clicked(programPage, clickTimer, bankAccount)
+                        interacts.clicked()
             else:
-                programPage, clickTimer, bankAccount = interacts.clicked(programPage, clickTimer, bankAccount)
+                interacts.clicked()
         interacts.draw()
         interacts.inUse = False
 
-    if programPage != "Main Menu" and gameInProgress == False: #once u add blackjack and nim, add a game in progress variable and make this only show up when a game isnt in progress
+    if programPage != "Main Menu" and gameInProgress == False:
         BackButton.inUse = True
 
     match programPage:
@@ -343,6 +388,8 @@ while run:
             blackjackStandButton.inUse = True
             drawText("BLACKJACK", (255, 255, 255),910, 25)
             drawText(f"Current cards: {playersHand}",(255, 255, 255),550, 425)
+            drawText(f"Current Hand Value: {playersHandValue}",(255, 255, 255),550, 525)
+            drawText(f"Cards in Deck: {cardsInDeck}",(255, 255, 255), 550, 325)
 
         case "Slots":
             slotsRollButton.inUse = True
