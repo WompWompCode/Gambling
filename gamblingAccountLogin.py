@@ -1,6 +1,6 @@
 import json
 
-global currentGamblerAccount
+global currentGamblerAccount, gamblerBalance
 
 def createAccount(newAccount):
     with open("gamblerAccounts.json", "r+") as file:
@@ -70,4 +70,61 @@ def accountLogin():
                         loginAttempt = "fail"
                 else:
                     print("Invalid Username")
+                    loginAttempt = "fail"
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+#################################
+#FOR THE GUI VERSION
+#################################
+
+def accountRegistrationGUI(accountUserReg, accountPassReg, accountPassRegConfirm):
+    registrationAttempt = "ongoing"
+    if registrationAttempt != "success":
+        registrationAttempt = "ongoing"
+
+        for i in range(len(gamblerAccounts)):
+            if registrationAttempt != "success":
+                if gamblerAccounts[i]["account_username"] == accountUserReg:
+                    registrationAttempt = "fail"
+                if accountPassReg != accountPassRegConfirm:
+                    registrationAttempt = "fail"
+        if registrationAttempt != "fail":
+                    registrationAttempt = "success"
+
+    if registrationAttempt == "success":
+        accountInfo = {
+        "account_username": accountUserReg,
+        "account_password": accountPassReg,
+        "balance": 20000
+        }
+        createAccount(accountInfo)
+        
+    return registrationAttempt
+
+
+
+def accountLoginGUI(accountUserLogin, accountPassLogin):
+    loginAttempt = "ongoing"
+    if loginAttempt != "success":
+        loginAttempt = "ongoing"
+        while loginAttempt == "ongoing":
+            for i in range(len(gamblerAccounts)):
+                if gamblerAccounts[i]["account_username"] == accountUserLogin:
+                    if gamblerAccounts[i]["account_password"] == accountPassLogin:
+                        global gamblerBalance
+                        gamblerBalance = gamblerAccounts[i]["balance"]
+                        global currentGamblerAccount
+                        currentGamblerAccount = gamblerAccounts[i]["account_username"]
+                        global accountArrayLocation
+                        accountArrayLocation = i
+                        loginAttempt = "success"
+                        return loginAttempt
+                    else:
+                        loginAttempt = "fail"
+                else:
                     loginAttempt = "fail"

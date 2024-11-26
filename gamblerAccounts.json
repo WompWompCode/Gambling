@@ -3,12 +3,12 @@
         {
             "account_username": "WompWomp",
             "account_password": "abc123",
-            "balance": 18039
+            "balance": 20039
         },
         {
-            "account_username": "no",
-            "account_password": "no",
-            "balance": 21519
+            "account_username": "evan",
+            "account_password": "tlevel",
+            "balance": 25000
         }
     ]
 }

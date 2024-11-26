@@ -3,7 +3,6 @@ import gamblingAccountLogin
 from gamblingAccountLogin import *
 from random import randint
 from random import choice
-from tkinter import *
 
 global bankAccount
 global accountUsername
