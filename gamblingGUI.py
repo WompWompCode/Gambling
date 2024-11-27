@@ -23,6 +23,7 @@ playersHand = []
 gameInProgress = False
 accountEntered = False
 accountMade = False
+failedGamblingAccess = False
 
 
 def drawText(text, colour, x, y):
@@ -88,11 +89,13 @@ class Button():
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
     def clicked(self):
-        global programPage, aceValueAssigned, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, gameStatus
+        global accountEntered, failedGamblingAccess, programPage, aceValueAssigned, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, gameStatus
         if clickTimer <= 0:
             for interacts in InteractList[1]:
                 interacts.inputFinished = False
                 interacts.active = False
+
+            failedGamblingAccess = False
             
             
             
@@ -117,7 +120,11 @@ class Button():
                     programPage = "Account Menu"
                 
                 case "BeginGambling":
-                    programPage = "Gambling Menu"
+                    if accountEntered == True:
+                        failedGamblingAccess = False
+                        programPage = "Gambling Menu"
+                    else:
+                        failedGamblingAccess = True
 
                 case "blackjackStart":
                     programPage = "Blackjack"
@@ -195,7 +202,7 @@ class Button():
                     programPage = "Register Menu"
                     
                 case "accountDetailsSubmit":
-                    global accountEntered, gamblerAccounts, bankAccountNumber, currentGamblerAccount, accountMade, accountUsername
+                    global gamblerAccounts, bankAccountNumber, currentGamblerAccount, accountMade, accountUsername
                     if programPage == "Login Menu":
                         loginAttempt = accountLoginGUI(LoginInputUsernameButton.text[0], LoginInputPasswordButton.text[0])
                         if loginAttempt == "success":
@@ -305,15 +312,17 @@ class Button():
 
 
 textFont = pygame.font.SysFont("Arial", 40)
-BackButton = Button("Back", 1700, 900, 100, 100, (255, 0, 0), ("Back", (255, 255, 255), 1710, 920))
+BackButton = Button("Back", 1700, 900, 100, 100, (255, 0, 0), ["Back", (255, 255, 255), 1710, 920])
+SettingsButton = Button("Settings", 1700, 100, 120, 60, (200, 200, 50), ["Settings", (255, 255, 255), 1700, 105])
 BeginGamblingButton = Button("BeginGambling", 760, 700, 400, 150, (255, 0 , 0), ["Start Gambling", (255, 255, 255),850, 725])
 EnterAccountButton = Button("EnterAccount", 350, 700, 400, 150, (0,0,200), ["Login/Register", (255, 255, 255),450, 725])
 
 AccountLoginButton = Button("AccountLogin", 450, 700, 400, 150, (0,0,200), ["Login", (255, 255, 255),600, 725])
-AccountRegisterButton = Button("AccountRegister", 1070, 700, 400, 150, (0,0,200), ("Register", (255, 255, 255),1220, 725))
+AccountRegisterButton = Button("AccountRegister", 1070, 700, 400, 150, (0,0,200), ["Register", (255, 255, 255),1220, 725])
 
 accountDetailsSubmitButton = Button("accountDetailsSubmit", 860, 820, 200, 100, (0, 150, 0), ["Enter", (255,255,255),900, 830])
 
+playAgainButton = Button("playAgain", 760, 700, 400, 150, (200, 200, 50), ["Play Again", (255, 255, 255), 850, 725])
 
 blackjackStartButton = Button("blackjackStart", 760, 700, 400, 150, (0,0,255), ["Play Blackjack", (255, 255, 255),850, 725])
 blackjackHitButton = Button("blackjackHit", 450, 700, 400, 150, (0,0,200), ["Hit", (255, 255, 255),600, 725])
@@ -455,13 +464,17 @@ while run:
         interacts.draw()
         interacts.inUse = False
 
-    if programPage != "Main Menu" and gameInProgress == False and accountMade == False:
-        BackButton.inUse = True
+    if gameInProgress == False:
+        SettingsButton.inUse = True
+        if programPage != "Main Menu":
+            BackButton.inUse = True
 
     match programPage:
 
         case "Main Menu":
             BeginGamblingButton.inUse = True
+            if failedGamblingAccess == True:
+                drawText("Please Login First", (200, 10, 10), 830, 620)
             EnterAccountButton.inUse = True
 
         case "Account Menu":
@@ -489,7 +502,7 @@ while run:
             nimStartButton.inUse = True
 
         case "Blackjack":
-            if aceValueAssigned != False:
+            if aceValueAssigned != False and gameInProgress == True:
                 blackjackHitButton.inUse = True
                 blackjackStandButton.inUse = True
             drawText("BLACKJACK", (255, 255, 255),910, 25)
