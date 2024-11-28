@@ -24,6 +24,8 @@ gameInProgress = False
 accountEntered = False
 accountMade = False
 failedGamblingAccess = False
+cardX = 200
+cardY = 200
 
 
 def drawText(text, colour, x, y):
@@ -31,7 +33,13 @@ def drawText(text, colour, x, y):
     window.blit(img, (x, y))
 
 
-
+class AiHand:
+    def __init__(self):
+        self.hand = []
+        self.safeHand = []
+        nameChoices = ["Steve", "Mishel", "Billy", "Libby", "George", "Finley", "Ethan", "Charlie", "Tio", "Sophie", "Katelyn", "Joseph", "Amy", "Reece", "Shauna", "Zak"]
+        self.name = choice(nameChoices)
+AiHands = []
 
 def drawCard(hand, deckOfCards, cardsInDeck):
     cardDrawn = randint(1, cardsInDeck)
@@ -115,6 +123,12 @@ class Button():
 
                         case "Blackjack" | "Slots" | "Nim":
                             programPage = "Gambling Menu"
+                            
+                case "Home":
+                    for inputBoxes in InteractList[1]:
+                        inputBoxes.text[0] = "none"
+                        
+                    programPage = "Main Menu"
 
                 case "EnterAccount":
                     programPage = "Account Menu"
@@ -307,12 +321,29 @@ class Button():
 
                 case "nimStart":
                     programPage = "Nim"
+                    accountUsername = currentGamblerAccount
+                    deckOfCards = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3]
+                    cardsInDeck = len(deckOfCards)
+                    playedCards = []
+                    playersHand = []
+                    orderOfPlay = []
+                    aiPlayers = 3
+                    AiHands = []
+                    gameInProgress = True
+                    
+                    for aiHand in AiHands:
+                        for i in range(aiPlayers+1):
+                            aiHand.hand, deckOfCards, cardsInDeck = drawCard(aiHand.hand, deckOfCards, cardsInDeck)
+
+                    for i in range(aiPlayers+1):
+                        playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
 
             clickTimer = 80
 
 
 textFont = pygame.font.SysFont("Arial", 40)
 BackButton = Button("Back", 1700, 900, 100, 100, (255, 0, 0), ["Back", (255, 255, 255), 1710, 920])
+HomeButton = Button("Home", 1810, 900, 100, 100, (255, 0, 0), ["Home", (255, 255, 255), 1820, 920])
 SettingsButton = Button("Settings", 1700, 100, 120, 60, (200, 200, 50), ["Settings", (255, 255, 255), 1700, 105])
 BeginGamblingButton = Button("BeginGambling", 760, 700, 400, 150, (255, 0 , 0), ["Start Gambling", (255, 255, 255),850, 725])
 EnterAccountButton = Button("EnterAccount", 350, 700, 400, 150, (0,0,200), ["Login/Register", (255, 255, 255),450, 725])
@@ -406,6 +437,30 @@ RegisterInputPasswordConfirmButton = InputBox("RegisterInputPasswordConfirm", 76
 programPage = "Main Menu"
 clickTimer = 0
 
+# Finish the card class fr
+class Card:
+    def __init__(self, name, colour, text):
+        self.name = name
+        self.x = cardX
+        self.y = cardY
+        self.width = 100
+        self.height = 200
+        cardX = cardX + self.width + 10
+        
+        self.colour = colour
+        self.inUse = False
+        self.selected = False
+        self.text = text
+        self.InteractType = "card"
+        InteractList[2].append(self)
+        
+    def draw(self):
+        if self.inUse == True:
+            pygame.draw.rect(window, self.colour, pygame.Rect(self.x, self.y, self.width, self.height))
+            if self.text[0] != "none":
+                drawText(self.text[0], self.text[1], self.text[2], self.text[3])
+                
+
 
 run = True
 while run:
@@ -468,6 +523,7 @@ while run:
         SettingsButton.inUse = True
         if programPage != "Main Menu":
             BackButton.inUse = True
+            HomeButton.inUse = True
 
     match programPage:
 
