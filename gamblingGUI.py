@@ -7,9 +7,7 @@ import pygame
 pygame.init()
 window = pygame.display.set_mode([1920, 1080])
 
-textFont = pygame.font.SysFont("Arial", 30)
-
-global programPage, clickTimer, bankAccount, accountUsername
+global programPage, clickTimer, bankAccount, accountUsername, nextTextLine
 
 accountUsername = "Guest"
 
@@ -24,8 +22,9 @@ gameInProgress = False
 accountEntered = False
 accountMade = False
 failedGamblingAccess = False
-cardX = 200
-cardY = 200
+cardX = 750
+cardY = 700
+nextTextLine = 0
 
 
 def drawText(text, colour, x, y):
@@ -74,7 +73,7 @@ def updateBalance(bankAccount):
 
 
 
-InteractList = [[],[]]
+InteractList = [[],[],[]]
 
 class Button():
     def __init__(self, name, x, y, width, height, colour, text):
@@ -103,8 +102,8 @@ class Button():
                 interacts.inputFinished = False
                 interacts.active = False
 
+
             failedGamblingAccess = False
-            
             
             
             match self.name:
@@ -142,17 +141,17 @@ class Button():
 
                 case "blackjackStart":
                     programPage = "Blackjack"
-                    deckOfCards = [("ace", "spades", "ace"), ("two", "spades", 2), ("three", "spades", 3), ("four", "spades", 4), ("five", "spades", 5),
-                    ("six", "spades", 6), ("seven", "spades", 7), ("eight", "spades", 8), ("nine", "spades", 9), ("ten", "spades", 10), 
-                    ("jack", "spades", 10),("queen", "spades", 10), ("king", "spades", 10),  ("ace", "clubs", "ace"), ("two", "clubs", 2), 
-                    ("three", "clubs", 3), ("four", "clubs", 4),("five", "clubs", 5), ("six", "clubs", 6), ("seven", "clubs", 7),
-                    ("eight", "clubs", 8), ("nine", "clubs", 9), ("ten", "clubs", 10),("jack", "clubs", 10), ("queen", "clubs", 10),
-                    ("king", "clubs", 10),  ("ace", "hearts", "ace"), ("two", "hearts", 2), ("three", "hearts", 3),("four", "hearts", 4),
-                    ("five", "hearts", 5), ("six", "hearts", 6), ("seven", "hearts", 7), ("eight", "hearts", 8), ("nine", "hearts", 9),
-                    ("ten", "hearts", 10), ("jack", "hearts", 10), ("queen", "hearts", 10), ("king", "hearts", 10),  ("ace", "diamonds", "ace"),
-                    ("two", "diamonds", 2), ("three", "diamonds", 3), ("four", "diamonds", 4), ("five", "diamonds", 5), ("six", "diamonds", 6),
-                    ("seven", "diamonds", 7), ("eight", "diamonds", 8), ("nine", "diamonds", 9), ("ten", "diamonds", 10), ("jack", "diamonds", 10), 
-                    ("queen", "diamonds", 10), ("king", "diamonds", 10),]
+                    deckOfCards = [["ace", "spades", "ace"], ["two", "spades", 2], ["three", "spades", 3], ["four", "spades", 4], ["five", "spades", 5],
+                    ["six", "spades", 6], ["seven", "spades", 7], ["eight", "spades", 8], ["nine", "spades", 9], ["ten", "spades", 10], 
+                    ["jack", "spades", 10],["queen", "spades", 10], ["king", "spades", 10],  ["ace", "clubs", "ace"], ["two", "clubs", 2], 
+                    ["three", "clubs", 3], ["four", "clubs", 4],["five", "clubs", 5], ["six", "clubs", 6], ["seven", "clubs", 7],
+                    ["eight", "clubs", 8], ["nine", "clubs", 9], ["ten", "clubs", 10],["jack", "clubs", 10], ["queen", "clubs", 10],
+                    ["king", "clubs", 10],  ["ace", "hearts", "ace"], ["two", "hearts", 2], ["three", "hearts", 3],["four", "hearts", 4],
+                    ["five", "hearts", 5], ["six", "hearts", 6], ["seven", "hearts", 7], ["eight", "hearts", 8], ["nine", "hearts", 9],
+                    ["ten", "hearts", 10], ["jack", "hearts", 10], ["queen", "hearts", 10], ["king", "hearts", 10],  ["ace", "diamonds", "ace"],
+                    ["two", "diamonds", 2], ["three", "diamonds", 3], ["four", "diamonds", 4], ["five", "diamonds", 5], ["six", "diamonds", 6],
+                    ["seven", "diamonds", 7], ["eight", "diamonds", 8], ["nine", "diamonds", 9], ["ten", "diamonds", 10], ["jack", "diamonds", 10], 
+                    ["queen", "diamonds", 10], ["king", "diamonds", 10],]
                     dealersHand = []
                     playersHand = []
                     gameInProgress = True
@@ -440,10 +439,12 @@ clickTimer = 0
 # Finish the card class fr
 class Card:
     def __init__(self, name, colour, text):
+        global cardX
+        global cardY
         self.name = name
         self.x = cardX
         self.y = cardY
-        self.width = 100
+        self.width = 150
         self.height = 200
         cardX = cardX + self.width + 10
         
@@ -457,10 +458,15 @@ class Card:
     def draw(self):
         if self.inUse == True:
             pygame.draw.rect(window, self.colour, pygame.Rect(self.x, self.y, self.width, self.height))
-            if self.text[0] != "none":
-                drawText(self.text[0], self.text[1], self.text[2], self.text[3])
+            nextTextLine = 0
+            for line in self.text:
+                if line != "none":
+                    drawText(line, (255,255,255), self.x + 5, self.y + 10 + nextTextLine)
+                nextTextLine += 40
+                    
+    def clicked(self):
+        ("Placeholder")
                 
-
 
 run = True
 while run:
@@ -501,7 +507,7 @@ while run:
     drawText(f"Bank Account: {bankAccount}", (255, 255, 255),1600, 25)
     
     
-    for interacts in InteractList[0] + InteractList[1]:
+    for interacts in InteractList[0] + InteractList[1] + InteractList[2]:
         
         if interacts.x < mouseX < interacts.x + interacts.width and interacts.y < mouseY < interacts.y + interacts.height and interacts.inUse == True and pygame.mouse.get_pressed()[0]:
             if clickTimer <= 0:
@@ -518,6 +524,8 @@ while run:
                 interacts.clicked()
         interacts.draw()
         interacts.inUse = False
+    
+    InteractList[2] = []
 
     if gameInProgress == False:
         SettingsButton.inUse = True
@@ -562,10 +570,9 @@ while run:
                 blackjackHitButton.inUse = True
                 blackjackStandButton.inUse = True
             drawText("BLACKJACK", (255, 255, 255),910, 25)
-            drawText(f"Current cards: {playersHand}",(20, 20, 255),450, 425)
-            drawText(f"Current Hand Value: {playersHandValue}",(20, 20, 255),450, 525)
-            if aceValueAssigned == True:
-                drawText(f"Cards in Deck: {cardsInDeck}",(20, 255, 20), 450, 325)
+            drawText(f"Current Hand Value: {playersHandValue}",(20, 20, 255),1050, 325)
+            drawText(f"Cards in Deck: {cardsInDeck}",(20, 255, 20), 450, 325)
+            
             if gameStatus == "Win":
                 drawText("You win!", (255, 255, 255), 900, 100)
                 drawText(f"Dealer's hand: {dealersHand}",(255, 20, 20),450, 225)
@@ -578,7 +585,17 @@ while run:
             if aceValueAssigned == False:
                 blackjackAceHighButton.inUse = True
                 blackjackAceLowButton.inUse = True
+            
+            nextTextLine = 0
+            
+            cardX = 850 - (50 * len(playersHand))
+            cardY = 400
+            
+            for card in playersHand:
+                InteractList[2].append(Card(f"{card[0]} of {card[1]}", (0,0,0), [card[0], "of", card[1]]))
                 
+            for card in InteractList[2]:
+                card.inUse = True
                 
 
         case "Slots":
@@ -587,6 +604,21 @@ while run:
             slotsWheel2Button.inUse = True
             slotsWheel3Button.inUse = True
             drawText("SLOTS", (255, 255, 255),910, 25)
+            
+        case "Nim":
+            drawText("NIM", (255, 255, 255),910, 25)
+            
+            
+            
+            cardX = 650
+            cardY = 700
+            
+            for card in playersHand:
+                InteractList[2].append(Card(str(card), (0,0,0), ["none", f"     {str(card)}"]))
+                
+            for card in InteractList[2]:
+                card.inUse = True
+                
 
     
     
