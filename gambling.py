@@ -238,9 +238,14 @@ def nimTypeZero():
             playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
         
         print(f"Your current hand is {playersHand}")
-        orderOfPlay.append(accountUsername)
-        for aiHand in AiHands:
-            orderOfPlay.append(aiHand.name)
+        playerOrderPos = randint(0,3)
+        currentAiPlayerPos = 0
+        for i in range(aiPlayers + 1):
+            if i == playerOrderPos:
+                orderOfPlay.append(accountUsername)
+            else:
+                orderOfPlay.append(AiHands[currentAiPlayerPos].name)
+                currentAiPlayerPos += 1
         print(orderOfPlay)
         
         while gameInProgress == True:

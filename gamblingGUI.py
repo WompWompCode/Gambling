@@ -51,6 +51,13 @@ def drawCard(hand, deckOfCards, cardsInDeck):
     cardsInDeck = len(deckOfCards)
     return hand, deckOfCards, cardsInDeck
 
+def placeCard(cardPos, hand, playedCards):
+    cardPlaced = hand[cardPos]
+    playedCards.append(cardPlaced)
+    del hand[cardPos]
+    print(f"Card {cardPlaced} has been placed")
+    return cardPos, hand, playedCards
+
 
 
 def updateBalance(bankAccount):
@@ -96,7 +103,7 @@ class Button():
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
     def clicked(self):
-        global accountEntered, failedGamblingAccess, programPage, aceValueAssigned, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, gameStatus
+        global accountEntered, failedGamblingAccess, programPage, aceValueAssigned, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, gameStatus, orderOfPlay, playedCards
         if clickTimer <= 0:
             for interacts in InteractList[1]:
                 interacts.inputFinished = False
@@ -329,6 +336,10 @@ class Button():
                     aiPlayers = 3
                     AiHands = []
                     gameInProgress = True
+
+
+                    for i in range(aiPlayers):
+                        AiHands.append(AiHand())
                     
                     for aiHand in AiHands:
                         for i in range(aiPlayers+1):
@@ -336,6 +347,15 @@ class Button():
 
                     for i in range(aiPlayers+1):
                         playersHand, deckOfCards, cardsInDeck = drawCard(playersHand, deckOfCards, cardsInDeck)
+
+                    playerOrderPos = randint(0,3)
+                    currentAiPlayerPos = 0
+                    for i in range(aiPlayers + 1):
+                        if i == playerOrderPos:
+                            orderOfPlay.append(accountUsername)
+                        else:
+                            orderOfPlay.append(AiHands[currentAiPlayerPos].name)
+                            currentAiPlayerPos += 1
 
             clickTimer = 80
 
@@ -450,6 +470,7 @@ class Card:
         
         self.colour = colour
         self.inUse = False
+        self.placeable = True
         self.selected = False
         self.text = text
         self.InteractType = "card"
@@ -465,7 +486,16 @@ class Card:
                 nextTextLine += 40
                     
     def clicked(self):
-        ("Placeholder")
+        global clickTimer, playersHand, playedCards
+        if clickTimer <= 0:
+            print("ham")
+            for card in range(len(playersHand)):
+                if playersHand[card] == int(self.name):
+                    card, playersHand, playedCards = placeCard(card, playersHand, playedCards)
+                    break
+
+
+            clickTimer = 80
                 
 
 run = True
@@ -510,18 +540,15 @@ while run:
     for interacts in InteractList[0] + InteractList[1] + InteractList[2]:
         
         if interacts.x < mouseX < interacts.x + interacts.width and interacts.y < mouseY < interacts.y + interacts.height and interacts.inUse == True and pygame.mouse.get_pressed()[0]:
-            if clickTimer <= 0:
-                match interacts.name:
-                    case "slotsRoll":
-                        interacts.clicked()
-                        slotsWheel1Button = Button("slotsWheel1", 710, 400, 100, 100, (100, 0, 155), (str(wheel1), (255, 255, 255), 750, 425))
-                        slotsWheel2Button = Button("slotsWheel2", 910, 400, 100, 100, (100, 0, 155), (str(wheel2), (255, 255, 255), 950, 425))
-                        slotsWheel3Button = Button("slotsWheel3", 1110, 400, 100, 100, (100, 0, 155), (str(wheel3), (255, 255, 255), 1150, 425))
-                    
-                    case _: #basically the else of switch statements
-                        interacts.clicked()
-            else:
-                interacts.clicked()
+            match interacts.name:
+                case "slotsRoll":
+                    interacts.clicked()
+                    slotsWheel1Button = Button("slotsWheel1", 710, 400, 100, 100, (100, 0, 155), (str(wheel1), (255, 255, 255), 750, 425))
+                    slotsWheel2Button = Button("slotsWheel2", 910, 400, 100, 100, (100, 0, 155), (str(wheel2), (255, 255, 255), 950, 425))
+                    slotsWheel3Button = Button("slotsWheel3", 1110, 400, 100, 100, (100, 0, 155), (str(wheel3), (255, 255, 255), 1150, 425))
+                
+                case _: #basically the else of switch statements
+                    interacts.clicked()
         interacts.draw()
         interacts.inUse = False
     
@@ -610,14 +637,33 @@ while run:
             
             
             
-            cardX = 650
+            cardX = 850 - (50 * len(playersHand))
             cardY = 700
+            playedCardsValue = 0  
+            for j in range(len(playedCards)):
+                        playedCardsValue += playedCards[j]
             
             for card in playersHand:
-                InteractList[2].append(Card(str(card), (0,0,0), ["none", f"     {str(card)}"]))
+                match card:
+                    case 0:
+                        cardColour = (205, 0, 0)
+                    case 1:
+                        cardColour = (0, 0, 205)
+                    case 2:
+                        cardColour = (0, 155, 0)
+                    case 3:
+                        cardColour = (225, 225, 0)
+
+                InteractList[2].append(Card(str(card), cardColour, ["none", f"     {str(card)}"]))
                 
             for card in InteractList[2]:
                 card.inUse = True
+                card.Placeable = True
+
+            drawText(f"Order of Play: {orderOfPlay}", (255, 255, 255), 300, 325)
+            drawText(f"Cards Played: {playedCards}", (255, 255, 255), 300, 425)
+            drawText(f"Played Value: {playedCardsValue}", (255, 255, 255), 300, 525)
+
                 
 
     
