@@ -103,7 +103,7 @@ class Button():
                 drawText(self.text[0], self.text[1], self.text[2], self.text[3])
             
     def clicked(self):
-        global accountEntered, failedGamblingAccess, programPage, aceValueAssigned, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, gameStatus, orderOfPlay, playedCards
+        global accountEntered, failedGamblingAccess, programPage, AiHands, currentPlayer, aceValueAssigned, clickTimer, bankAccount, deckOfCards, cardsInDeck, dealersHand, dealersHandAmount, dealersHandValue, playersHand, playersHandAmount, playersHandValue, gameInProgress, gameStatus, orderOfPlay, playedCards
         if clickTimer <= 0:
             for interacts in InteractList[1]:
                 interacts.inputFinished = False
@@ -336,6 +336,7 @@ class Button():
                     aiPlayers = 3
                     AiHands = []
                     gameInProgress = True
+                    currentPlayer = 0
 
 
                     for i in range(aiPlayers):
@@ -486,13 +487,17 @@ class Card:
                 nextTextLine += 40
                     
     def clicked(self):
-        global clickTimer, playersHand, playedCards
+        global clickTimer, playersHand, playedCards, currentPlayer
         if clickTimer <= 0:
-            print("ham")
-            for card in range(len(playersHand)):
-                if playersHand[card] == int(self.name):
-                    card, playersHand, playedCards = placeCard(card, playersHand, playedCards)
-                    break
+            match programPage:
+                case "Nim":
+                    if orderOfPlay[currentPlayer] == currentGamblerAccount:
+                        for card in range(len(playersHand)):
+                            if playersHand[card] == int(self.name):
+                                card, playersHand, playedCards = placeCard(card, playersHand, playedCards)
+                                if playedCardsValue < 9:
+                                    currentPlayer += 1
+                                break
 
 
             clickTimer = 80
@@ -655,11 +660,77 @@ while run:
                         cardColour = (225, 225, 0)
 
                 InteractList[2].append(Card(str(card), cardColour, ["none", f"     {str(card)}"]))
-                
+
             for card in InteractList[2]:
                 card.inUse = True
                 card.Placeable = True
 
+            if currentPlayer == 4:
+                currentPlayer = 0
+
+            print(currentPlayer)
+
+            if gameInProgress == True:
+
+                if playedCardsValue >= 9:
+                    if orderOfPlay[currentPlayer] == accountUsername:
+                        bankAccount = bankAccount - 1000
+                        updateBalance(bankAccount)
+                        gameInProgress = False
+
+                    else:
+                        for aiHand in AiHands:
+                            if orderOfPlay[currentPlayer] == aiHand.name:
+                                bankAccount = bankAccount + 1000 // 3
+                                updateBalance(bankAccount)
+                                gameInProgress = False
+                                break
+
+                
+                for aiHand in AiHands:
+                    if aiHand.hand != []:
+                        if orderOfPlay[currentPlayer] == aiHand.name:
+                            for j2 in range(len(playedCards)):
+                                playedCardsValue += playedCards[j2]
+
+                            for card in range(len(aiHand.hand)):
+                                if not (aiHand.hand[card] + playedCardsValue >= 9):
+                                    aiHand.safeHand.append(aiHand.hand[card])
+
+                            if len(aiHand.safeHand)  >= 1:
+                                cardPlaced = randint(0, len(aiHand.safeHand)-1)
+                                #these 4 lines basically fix the safe hand positioning so that its in the correct part of the normal hand and it therefore picks the right card
+                                #basically teaches the ai the difference between the cards it can place down this turn and NOT die, and the ones thatll just lose it this turn
+                                cardPlaced = aiHand.safeHand[cardPlaced]
+                                for card in range(len(aiHand.hand)):
+                                    if aiHand.hand[card] == cardPlaced:
+                                        cardPlaced = card
+                                        break
+
+                            else:
+                                cardPlaced = randint(0, len(aiHand.hand)-1)
+
+                            cardPlaced, aiHand.hand, playedCards = placeCard(cardPlaced, aiHand.hand, playedCards) 
+                            aiHand.safeHand = []
+
+                            if playedCardsValue >= 9:
+                                break
+
+                            playedCardsValue = 0   
+                            currentPlayer += 1
+
+                        
+                    if playedCardsValue >= 9:
+                        break
+                    
+
+                
+
+
+
+            
+            if playedCardsValue >= 9:
+                drawText(f"{orderOfPlay[currentPlayer]} took the play pile count over 9, they lose", (255, 255, 255), 300, 625)
             drawText(f"Order of Play: {orderOfPlay}", (255, 255, 255), 300, 325)
             drawText(f"Cards Played: {playedCards}", (255, 255, 255), 300, 425)
             drawText(f"Played Value: {playedCardsValue}", (255, 255, 255), 300, 525)
