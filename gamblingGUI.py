@@ -694,7 +694,7 @@ while run:
                             break
             
             if gameInProgress == True:
-       
+            
                 for aiHand in AiHands:
                     if currentPlayer == 4:
                         currentPlayer = 0
@@ -713,10 +713,7 @@ while run:
                                     aiHand.safeHand.append(aiHand.hand[card])
 
                             if len(aiHand.safeHand)  >= 1:
-                                cardPlaced = randint(0, len(aiHand.safeHand)-1)
-                                #these 4 lines basically fix the safe hand positioning so that its in the correct part of the normal hand and it therefore picks the right card
-                                #basically teaches the ai the difference between the cards it can place down this turn and NOT die, and the ones thatll just lose it this turn
-                                cardPlaced = aiHand.safeHand[cardPlaced]
+                                cardPlaced = aiHand.safeHand[randint(0, len(aiHand.safeHand)-1)]
                                 for card in range(len(aiHand.hand)):
                                     if aiHand.hand[card] == cardPlaced:
                                         cardPlaced = card
@@ -733,13 +730,6 @@ while run:
                                 break
                             if playedCardsValue < 9:
                                     currentPlayer += 1
-
-
-                        
-                    
-
-                
-
 
 
             
