@@ -56,7 +56,10 @@ def placeCard(cardPos, hand, playedCards):
     playedCards.append(cardPlaced)
     del hand[cardPos]
     print(f"Card {cardPlaced} has been placed")
-    return cardPos, hand, playedCards
+    playedCardsValue = 0  
+    for j in range(len(playedCards)):
+                playedCardsValue += playedCards[j]
+    return cardPos, hand, playedCards, playedCardsValue
 
 
 
@@ -487,16 +490,22 @@ class Card:
                 nextTextLine += 40
                     
     def clicked(self):
-        global clickTimer, playersHand, playedCards, currentPlayer
+        global clickTimer, playersHand, playedCards, currentPlayer, gameInProgress, playedCardsValue, bankAccount
         if clickTimer <= 0:
             match programPage:
                 case "Nim":
                     if orderOfPlay[currentPlayer] == currentGamblerAccount:
                         for card in range(len(playersHand)):
                             if playersHand[card] == int(self.name):
-                                card, playersHand, playedCards = placeCard(card, playersHand, playedCards)
+                                card, playersHand, playedCards, playedCardsValue = placeCard(card, playersHand, playedCards)
+                                
                                 if playedCardsValue < 9:
                                     currentPlayer += 1
+                                if playedCardsValue >= 9:
+                                    if orderOfPlay[currentPlayer] == accountUsername:
+                                        bankAccount = bankAccount - 1000
+                                        updateBalance(bankAccount)
+                                        gameInProgress = False
                                 break
 
 
@@ -668,30 +677,36 @@ while run:
             if currentPlayer == 4:
                 currentPlayer = 0
 
-            print(currentPlayer)
+            
 
+            if playedCardsValue >= 9 and gameInProgress == True:
+                if orderOfPlay[currentPlayer] == accountUsername:
+                    bankAccount = bankAccount - 1000
+                    updateBalance(bankAccount)
+                    gameInProgress = False
+
+                else:
+                    for aiHand in AiHands:
+                        if orderOfPlay[currentPlayer] == aiHand.name:
+                            bankAccount = bankAccount + 1000 // 3
+                            updateBalance(bankAccount)
+                            gameInProgress = False
+                            break
+            
             if gameInProgress == True:
-
-                if playedCardsValue >= 9:
-                    if orderOfPlay[currentPlayer] == accountUsername:
-                        bankAccount = bankAccount - 1000
-                        updateBalance(bankAccount)
-                        gameInProgress = False
-
-                    else:
-                        for aiHand in AiHands:
-                            if orderOfPlay[currentPlayer] == aiHand.name:
-                                bankAccount = bankAccount + 1000 // 3
-                                updateBalance(bankAccount)
-                                gameInProgress = False
-                                break
-
-                
+       
                 for aiHand in AiHands:
+                    if currentPlayer == 4:
+                        currentPlayer = 0
+                    playedCardsValue = 0  
+                    for j in range(len(playedCards)):
+                                playedCardsValue += playedCards[j]
+                    
+                    if playedCardsValue >= 9:
+                        break
+                    
                     if aiHand.hand != []:
                         if orderOfPlay[currentPlayer] == aiHand.name:
-                            for j2 in range(len(playedCards)):
-                                playedCardsValue += playedCards[j2]
 
                             for card in range(len(aiHand.hand)):
                                 if not (aiHand.hand[card] + playedCardsValue >= 9):
@@ -710,18 +725,17 @@ while run:
                             else:
                                 cardPlaced = randint(0, len(aiHand.hand)-1)
 
-                            cardPlaced, aiHand.hand, playedCards = placeCard(cardPlaced, aiHand.hand, playedCards) 
+                            cardPlaced, aiHand.hand, playedCards, playedCardsValue = placeCard(cardPlaced, aiHand.hand, playedCards) 
                             aiHand.safeHand = []
+                            
 
                             if playedCardsValue >= 9:
                                 break
+                            if playedCardsValue < 9:
+                                    currentPlayer += 1
 
-                            playedCardsValue = 0   
-                            currentPlayer += 1
 
                         
-                    if playedCardsValue >= 9:
-                        break
                     
 
                 
