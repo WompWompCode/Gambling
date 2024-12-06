@@ -730,14 +730,19 @@ while run:
                                 break
                             if playedCardsValue < 9:
                                     currentPlayer += 1
-
-
             
             if playedCardsValue >= 9:
                 drawText(f"{orderOfPlay[currentPlayer]} took the play pile count over 9, they lose", (255, 255, 255), 300, 625)
             drawText(f"Order of Play: {orderOfPlay}", (255, 255, 255), 300, 325)
             drawText(f"Cards Played: {playedCards}", (255, 255, 255), 300, 425)
             drawText(f"Played Value: {playedCardsValue}", (255, 255, 255), 300, 525)
+        
+            
+        case "Roulette":
+            drawText("ROULETTE", (255, 255, 255),890, 25)
+            
+        case "Poker":
+            drawText("POKER", (255, 255, 255),910, 25)
 
                 
 
